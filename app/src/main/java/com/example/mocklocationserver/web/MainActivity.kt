@@ -1,6 +1,7 @@
 package com.example.mocklocationserver.web
 
 import android.Manifest
+import android.app.ActivityManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -65,6 +66,16 @@ class MainActivity : AppCompatActivity() {
 
             // 显示提示消息（可选）
             Toast.makeText(this, "IP 地址和 URL 已复制到剪贴板", Toast.LENGTH_SHORT).show()
+
+            // 检查服务是否已经启动，若没有启动则先启动
+            if (!isMockLocationServiceRunning()) {
+                startWebServer()  // 启动服务
+            }
+
+            // 打开浏览器
+            val url = "http://$ipAddress:8080/?key=$apiKey"  // 拼接 URL
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)  // 启动浏览器打开 URL
         }
 
 
@@ -133,5 +144,17 @@ class MainActivity : AppCompatActivity() {
         stopService(i)
     }
 
+    /**
+     * 检查 MockLocationService 是否正在运行
+     */
+    private fun isMockLocationServiceRunning(): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (MockLocationService::class.java.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
 
 }
