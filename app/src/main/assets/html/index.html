@@ -37,7 +37,10 @@
                  formElements.repeat = document.getElementById("repeatedly-update");
                  formElements.searchBox = document.getElementById("search_box");
                  formElements.map = document.getElementById("map");
-
+                 //经纬度
+                 formElements.locationInput = document.getElementById("location-input");
+                 formElements.locationInput.addEventListener("keypress", function(e) {
+                    onKeyPressLocationInput(e);});
 
                  var script = document.createElement("script");
                  script.type = "text/javascript";
@@ -50,6 +53,34 @@
 
              })();
          }
+
+         function onKeyPressLocationInput(e) {
+    if (e.key !== "Enter") {
+        return;  // 如果按的不是 "Enter" 键，则不执行后续操作
+    }
+
+    // 后续的经纬度解析和输入框更新逻辑
+    var location = formElements.locationInput.value.trim();
+    var words = location.split(',');
+    if (words.length !== 2) {
+        alert("请输入有效的经纬度（格式: 纬度, 经度）");
+        return;
+    }
+    var lat = parseFloat(words[0]);
+    var lng = parseFloat(words[1]);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("请输入有效的经纬度！");
+        return;
+    }
+
+    formElements.lat.value = lat;  // 更新纬度输入框
+    formElements.lng.value = lng;  // 更新经度输入框
+
+    // 更新地图上的标记位置
+    updateMarker(lat, lng);
+    onClickSendButton();
+}
 
          function onGoogleMapApiLoadError() {
              var m = "Google Map Apiのロードに失敗しました";
@@ -336,6 +367,9 @@
     </div>
 
     <div>
+        <label for="location-input">位置 (经纬度)</label>
+        <input type="text" id="location-input" placeholder="位置 (经纬度)" />
+
         <label for="latitude">纬度</label>
         <input type='text' id='latitude' placeholder='纬度' value="0" />
         
