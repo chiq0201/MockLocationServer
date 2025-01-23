@@ -56,18 +56,21 @@
 
          function onKeyPressLocationInput(e) {
     if (e.key !== "Enter") {
-        return;  // 如果按的不是 "Enter" 键，则不执行后续操作
+        return; // 如果按的不是 "Enter" 键，则不执行后续操作
     }
 
     // 后续的经纬度解析和输入框更新逻辑
     var location = formElements.locationInput.value.trim();
-    var words = location.split(',');
+
+    // 使用正则表达式匹配英文逗号、中文逗号、一个或多个空格作为分隔符
+    var words = location.split(/[\s,，]+/);
     if (words.length !== 2) {
-        alert("请输入有效的经纬度（格式: 纬度, 经度）");
+        alert("请输入有效的经纬度（格式: 纬度, 经度 或 纬度 经度）");
         return;
     }
-    var lat = parseFloat(words[0]);
-    var lng = parseFloat(words[1]);
+
+    var lat = parseFloat(words[0].trim());
+    var lng = parseFloat(words[1].trim());
 
     if (isNaN(lat) || isNaN(lng)) {
         alert("请输入有效的经纬度！");
@@ -81,6 +84,7 @@
     updateMarker(lat, lng);
     onClickSendButton();
 }
+
 
          function onGoogleMapApiLoadError() {
              var m = "Google Map Apiのロードに失敗しました";
@@ -368,7 +372,7 @@
 
     <div>
         <label for="location-input">位置 (经纬度)</label>
-        <input type="text" id="location-input" placeholder="位置 (经纬度)" />
+        <input type="text" id="location-input" placeholder="维度，经度" />
 
         <label for="latitude">纬度</label>
         <input type='text' id='latitude' placeholder='纬度' value="0" />
@@ -376,14 +380,14 @@
         <label for="longitude">经度</label>
         <input type='text' id='longitude' placeholder='经度' value="0" />
         
-        <label for="altitude">高度</label>
-        <input type='text' id='altitude' placeholder='高度' value="0" />
+<!--        <label for="altitude">高度</label>-->
+<!--        <input type='text' id='altitude' placeholder='高度' value="0" />-->
         
-        <label for="haccuracy">水平精度</label>
-        <input type='text' id='haccuracy' placeholder='水平精度' value="1" />
+<!--        <label for="haccuracy">水平精度</label>-->
+<!--        <input type='text' id='haccuracy' placeholder='水平精度' value="1" />-->
 
-        <label for="velocity">速度</label>
-        <input type='text' id='velocity' placeholder='速度' value="1" />
+<!--        <label for="velocity">速度</label>-->
+<!--        <input type='text' id='velocity' placeholder='速度' value="1" />-->
 
         <label for="repeatedly-update">每秒更新</label>
         <input type='checkbox' id='repeatedly-update' value="" checked  />
@@ -391,9 +395,11 @@
 
         <button id='write' onclick='onClickSendButton();'>发送</button>
     </div>
-    <div>
-        <p>※ 使用“每秒更新”时，仅首次更新会设置速度（之后的速度为 0）。</p>
-    </div>
+<!--    <div>-->
+<!--        <p>※ 使用“每秒更新”时，仅首次更新会设置速度（之后的速度为 0）。</p>-->
+<!--    </div>-->
+
+    <div></div>
 
     <!-- 添加按钮容器 -->
     <div id="buttons-container">
